@@ -97,9 +97,9 @@ export function ContentCard({ item, index = 0, isDragging = false }: ContentCard
 
         setFavorites(newFavorites)
         saveFavoritesToStorage(newFavorites)
-        
+
         // Dispatch custom event to notify other components about favorites update
-        window.dispatchEvent(new CustomEvent('favoritesUpdated', { 
+        window.dispatchEvent(new CustomEvent('favoritesUpdated', {
             detail: { favorites: newFavorites, itemId: item.id, action: isFavorite ? 'remove' : 'add' }
         }))
     }

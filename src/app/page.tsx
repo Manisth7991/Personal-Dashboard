@@ -467,7 +467,7 @@ function SearchView() {
                     <Settings className="w-5 h-5 mr-2 text-blue-500" />
                     Search Filters
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Content Type Filter */}
                     <div className="space-y-2">
@@ -1019,13 +1019,12 @@ export default function Home() {
             {/* Toast Notification */}
             {toast && (
                 <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
-                    <div className={`px-4 py-3 rounded-lg shadow-lg border max-w-sm ${
-                        toast.type === 'success' 
+                    <div className={`px-4 py-3 rounded-lg shadow-lg border max-w-sm ${toast.type === 'success'
                             ? 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200'
-                            : toast.type === 'error' 
-                            ? 'bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200'
-                            : 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
-                    }`}>
+                            : toast.type === 'error'
+                                ? 'bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200'
+                                : 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
+                        }`}>
                         <div className="flex items-center space-x-2">
                             {toast.type === 'success' && <span className="text-green-500">✓</span>}
                             {toast.type === 'error' && <span className="text-red-500">✗</span>}

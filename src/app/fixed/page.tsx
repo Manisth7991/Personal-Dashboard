@@ -428,8 +428,8 @@ export default function FixedDashboard() {
                                         key={type}
                                         onClick={() => setFilterType(type)}
                                         className={`px-3 py-1 text-sm rounded-lg transition-colors ${filterType === type
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                                             }`}
                                     >
                                         {type === 'all' ? 'All' : type.charAt(0).toUpperCase() + type.slice(1)}
