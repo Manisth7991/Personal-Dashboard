@@ -28,7 +28,7 @@ const createSafeStorage = () => {
     if (typeof window === 'undefined') {
         return createNoopStorage()
     }
-    
+
     try {
         return storage
     } catch {
