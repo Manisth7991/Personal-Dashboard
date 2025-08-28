@@ -52,12 +52,20 @@
     },
     "include": [
         "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.tsx",
         ".next/types/**/*.ts"
     ],
     "exclude": [
         "node_modules",
-        "cypress/**/*"
+        "cypress/**/*",
+        "cypress.config.ts",
+        "jest.config.js",
+        "jest.setup.js",
+        "__tests__/**/*",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx"
     ]
 }
