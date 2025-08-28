@@ -144,3 +144,51 @@ body {
             rgb(var(--muted)) 80px);
     background-size: 200px 100%;
 }
+
+/* Custom slider styles */
+.slider {
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.slider::-webkit-slider-track {
+    background: rgb(var(--border));
+    height: 8px;
+    border-radius: 4px;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    background: rgb(var(--primary));
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(var(--primary), 0.1);
+}
+
+.slider::-moz-range-track {
+    background: rgb(var(--border));
+    height: 8px;
+    border-radius: 4px;
+}
+
+.slider::-moz-range-thumb {
+    background: rgb(var(--primary));
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+}

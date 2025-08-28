@@ -5,6 +5,8 @@ export class AuthError extends Error {
     }
 }
 
+import { getUnsplashImage } from './imageUtils'
+
 interface User {
     id: string
     email: string
@@ -23,7 +25,7 @@ const mockUsers: User[] = [
         id: '1',
         email: 'demo@dashboard.com',
         name: 'Demo User',
-        avatar: 'https://picsum.photos/400/300?random=50',
+        avatar: getUnsplashImage('social', 0, 200, 200),
         preferences: {
             categories: ['technology', 'business', 'entertainment'],
             language: 'en',
@@ -34,7 +36,7 @@ const mockUsers: User[] = [
         id: '2',
         email: 'user@dashboard.com',
         name: 'Dashboard User',
-        avatar: 'https://picsum.photos/400/300?random=50',
+        avatar: getUnsplashImage('social', 1, 200, 200),
         preferences: {
             categories: ['news', 'sports', 'technology'],
             language: 'en',

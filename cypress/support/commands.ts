@@ -1,31 +1,38 @@
-// Custom Cypress commands
+// cypress/support/commands.ts
 
-// Command to login with test user
-Cypress.Commands.add('login', (email = 'demo@example.com', password = 'demo123') => {
-    cy.visit('/auth/signin')
-    cy.get('input[name="email"]').type(email)
-    cy.get('input[name="password"]').type(password)
-    cy.get('button[type="submit"]').click()
+// Custom commands for testing
+
+Cypress.Commands.add('getByTestId', (selector: string) => {
+    return cy.get(`[data-testid="${selector}"]`)
 })
 
-// Command to add item to favorites
-Cypress.Commands.add('addToFavorites', (itemTitle) => {
-    cy.contains(itemTitle).parent().find('button[aria-label*="favorite"]').click()
+Cypress.Commands.add('login', (username: string, password: string) => {
+    cy.session([username, password], () => {
+        cy.visit('/auth/signin')
+        cy.get('input[name="email"]').type(username)
+        cy.get('input[name="password"]').type(password)
+        cy.get('button[type="submit"]').click()
+        cy.url().should('not.include', '/auth/signin')
+    })
 })
 
-// Command to change language
-Cypress.Commands.add('changeLanguage', (language) => {
-    cy.get('[data-testid="language-toggle"]').click()
-    cy.contains(language).click()
+Cypress.Commands.add('searchFor', (query: string) => {
+    cy.get('input[placeholder*="Search"]').clear().type(query)
+    cy.get('input[placeholder*="Search"]').type('{enter}')
+})
+
+Cypress.Commands.add('waitForContent', () => {
+    cy.get('[data-testid="content-card"]').should('have.length.greaterThan', 0)
 })
 
 // Declare custom commands for TypeScript
 declare global {
     namespace Cypress {
         interface Chainable {
-            login(email?: string, password?: string): Chainable<void>
-            addToFavorites(itemTitle: string): Chainable<void>
-            changeLanguage(language: string): Chainable<void>
+            getByTestId(selector: string): Chainable<JQuery<HTMLElement>>
+            login(username: string, password: string): Chainable<void>
+            searchFor(query: string): Chainable<void>
+            waitForContent(): Chainable<void>
         }
     }
 }

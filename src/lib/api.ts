@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { getTrendingPosts, getSubredditPosts, formatRedditPost, type RedditPost } from '@/lib/reddit'
 import { mockNewsData, mockMovieData, mockSocialData, searchMockContent, getAllMockContent } from '@/lib/mockData'
+import { getUnsplashImage } from '@/lib/imageUtils'
 
 export interface NewsArticle {
     id: string
@@ -139,44 +139,6 @@ export const api = createApi({
             transformResponse: (response: any) => response.results,
         }),
 
-        // Reddit API endpoints
-        getRedditPosts: builder.query<any[], { subreddits?: string[]; limit?: number }>({
-            queryFn: async ({ subreddits = ['popular', 'technology', 'worldnews'], limit = 20 }) => {
-                try {
-                    let redditPosts: RedditPost[]
-
-                    if (subreddits.length === 1) {
-                        redditPosts = await getSubredditPosts(subreddits[0], limit)
-                    } else {
-                        redditPosts = await getTrendingPosts(limit)
-                    }
-
-                    // Format Reddit posts for our app
-                    const formattedPosts = redditPosts.map(formatRedditPost)
-
-                    return { data: formattedPosts }
-                } catch (error) {
-                    console.error('Error fetching Reddit posts:', error)
-                    // Fallback to mock data if Reddit API fails
-                    const mockPosts = [
-                        {
-                            id: 'reddit-fallback-1',
-                            title: 'Reddit API temporarily unavailable',
-                            description: 'Using fallback content while Reddit API is unavailable.',
-                            author: 'u/system',
-                            subreddit: 'r/announcements',
-                            score: 0,
-                            comments: 0,
-                            timestamp: new Date().toISOString(),
-                            type: 'reddit' as const
-                        }
-                    ]
-                    return { data: mockPosts }
-                }
-            },
-            providesTags: ['Social'],
-        }),
-
         // Keep the old getSocialPosts for backward compatibility
         getSocialPosts: builder.query<SocialPost[], { hashtag?: string; username?: string }>({
             queryFn: async ({ hashtag, username }) => {
@@ -186,7 +148,7 @@ export const api = createApi({
                         id: 'social-1',
                         username: 'techguru',
                         content: 'Just discovered this amazing new framework! #tech #coding',
-                        image: 'https://picsum.photos/400/300?random=1',
+                        image: getUnsplashImage('social', 0, 400, 300),
                         timestamp: new Date().toISOString(),
                         likes: 42,
                         hashtags: ['tech', 'coding'],
@@ -196,7 +158,7 @@ export const api = createApi({
                         id: 'social-2',
                         username: 'designpro',
                         content: 'Beautiful sunset from my workspace today 🌅',
-                        image: 'https://picsum.photos/400/300?random=2',
+                        image: getUnsplashImage('social', 1, 400, 300),
                         timestamp: new Date(Date.now() - 3600000).toISOString(),
                         likes: 89,
                         hashtags: ['sunset', 'workspace'],
@@ -240,6 +202,5 @@ export const {
     useGetMoviesByGenreQuery,
     useSearchMoviesQuery,
     useGetSocialPostsQuery,
-    useGetRedditPostsQuery,
 } = api
 

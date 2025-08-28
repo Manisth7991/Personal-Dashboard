@@ -1,11 +1,15 @@
-// Cypress E2E support file
+// cypress/support/e2e.ts
 import './commands'
 
-// Import Cypress testing library commands
-import '@testing-library/cypress/add-commands'
+// Hide fetch/XHR requests from command log
+Cypress.on('window:before:load', (win) => {
+    cy.stub(win.console, 'error').as('consoleError')
+    cy.stub(win.console, 'warn').as('consoleWarn')
+})
 
-// Handle uncaught exceptions
-Cypress.on('uncaught:exception', (err, runnable) => {
-    // Return false to prevent the error from failing the test
-    return false
+// Global before hook to wait for app to be ready
+beforeEach(() => {
+    // Wait for the page to load
+    cy.visit('/')
+    cy.wait(1000) // Give time for initial content to load
 })

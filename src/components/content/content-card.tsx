@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Heart, ExternalLink, Share, Clock, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { getImageWithFallback, FALLBACK_IMAGES } from '@/lib/imageUtils'
 
 export interface ContentItem {
     id: string
@@ -154,20 +155,22 @@ export function ContentCard({ item, index = 0, isDragging = false }: ContentCard
                 'card group cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1',
                 isDragging && 'opacity-50 rotate-2 shadow-2xl'
             )}
+            data-testid="content-card"
         >
             {/* Image */}
             <div className="relative h-48 bg-gray-100 dark:bg-gray-700 rounded-t-lg overflow-hidden">
-                {item.image && !imageError ? (
+                {!imageError ? (
                     <Image
-                        src={item.image}
+                        src={imageError ? FALLBACK_IMAGES[item.type] : getImageWithFallback(item.image, item.type, index)}
                         alt={item.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-200"
                         onError={() => setImageError(true)}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={index < 3} // Load first 3 images with priority
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">
+                    <div className="w-full h-full flex items-center justify-center text-4xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
                         {getTypeIcon()}
                     </div>
                 )}
@@ -246,13 +249,16 @@ export function ContentCard({ item, index = 0, isDragging = false }: ContentCard
                     </div>
 
                     {item.url && (
-                        <button
-                            onClick={() => window.open(item.url, '_blank')}
+                        <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 h-8 px-3 text-sm flex items-center space-x-1"
+                            onClick={e => e.stopPropagation()}
                         >
                             <span>Read More</span>
                             <ExternalLink className="w-3 h-3" />
-                        </button>
+                        </a>
                     )}
                 </div>
             </div>

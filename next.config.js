@@ -8,19 +8,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'picsum.photos',
-            },
-            {
-                protocol: 'https',
-                hostname: 'example.com',
-            },
-            {
-                protocol: 'https',
                 hostname: 'newsapi.org',
-            },
-            {
-                protocol: 'https',
-                hostname: 'via.placeholder.com',
             },
             {
                 protocol: 'https',
@@ -28,11 +16,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'img.freepik.com',
-            },
-            {
-                protocol: 'https',
-                hostname: 'unsplash.com',
+                hostname: 'source.unsplash.com',
             },
             {
                 protocol: 'https',
@@ -40,7 +24,11 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'source.unsplash.com',
+                hostname: 'picsum.photos',
+            },
+            {
+                protocol: 'https',
+                hostname: 'via.placeholder.com',
             },
             {
                 protocol: 'https',

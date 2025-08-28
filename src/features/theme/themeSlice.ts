@@ -8,7 +8,7 @@ interface ThemeState {
 }
 
 const initialState: ThemeState = {
-    theme: 'system',
+    theme: 'light',
     systemTheme: 'light',
 }
 

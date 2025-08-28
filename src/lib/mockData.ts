@@ -1,4 +1,5 @@
 // Mock data for development when API keys are not available
+import { getUnsplashImage } from './imageUtils'
 
 export interface ContentItem {
     id: string
@@ -22,8 +23,8 @@ export const mockNewsData: ContentItem[] = [
         type: 'news',
         title: 'Breaking: Major Tech Innovation Announced',
         description: 'A revolutionary new technology promises to change how we interact with digital devices.',
-        image: 'https://picsum.photos/400/300?random=50',
-        url: 'https://example.com/tech-news',
+        image: getUnsplashImage('news', 0),
+        url: 'https://www.theverge.com/tech',
         metadata: {
             source: 'TechNews',
             publishedAt: new Date().toISOString(),
@@ -35,8 +36,8 @@ export const mockNewsData: ContentItem[] = [
         type: 'news',
         title: 'Global Climate Summit Reaches Historic Agreement',
         description: 'World leaders unite on ambitious climate action plan with concrete targets.',
-        image: 'https://picsum.photos/400/300?random=50',
-        url: 'https://example.com/climate-news',
+        image: getUnsplashImage('news', 1),
+        url: 'https://www.bbc.com/news/science-environment-56837908',
         metadata: {
             source: 'World News',
             publishedAt: new Date(Date.now() - 3600000).toISOString(),
@@ -48,8 +49,8 @@ export const mockNewsData: ContentItem[] = [
         type: 'news',
         title: 'Stock Market Hits New Record High',
         description: 'Markets continue their upward trend as investors remain optimistic about economic recovery.',
-        image: 'https://picsum.photos/400/300?random=50',
-        url: 'https://example.com/market-news',
+        image: getUnsplashImage('news', 2),
+        url: 'https://www.reuters.com/markets/',
         metadata: {
             source: 'Financial Times',
             publishedAt: new Date(Date.now() - 7200000).toISOString(),
@@ -64,8 +65,8 @@ export const mockMovieData: ContentItem[] = [
         type: 'movie',
         title: 'The Future Chronicles',
         description: 'A sci-fi epic that takes viewers on a journey through time and space.',
-        image: 'https://picsum.photos/400/300?random=50',
-        url: 'https://example.com/movie-1',
+        image: getUnsplashImage('movie', 0, 400, 600),
+        url: 'https://www.imdb.com/title/tt0816692/',
         metadata: {
             source: 'Cinema Plus',
             publishedAt: '2024-01-15',
@@ -78,8 +79,8 @@ export const mockMovieData: ContentItem[] = [
         type: 'movie',
         title: 'Romance in the City',
         description: 'A heartwarming romantic comedy set in the bustling streets of New York.',
-        image: 'https://picsum.photos/400/600?random=10',
-        url: 'https://example.com/movie-2',
+        image: getUnsplashImage('movie', 1, 400, 600),
+        url: 'https://www.imdb.com/title/tt0112442/',
         metadata: {
             source: 'MovieHub',
             publishedAt: '2024-02-20',
@@ -92,8 +93,8 @@ export const mockMovieData: ContentItem[] = [
         type: 'movie',
         title: 'Action Heroes United',
         description: 'High-octane action thriller with spectacular stunts and visual effects.',
-        image: 'https://picsum.photos/400/300?random=50',
-        url: 'https://example.com/movie-3',
+        image: getUnsplashImage('movie', 2, 400, 600),
+        url: 'https://www.imdb.com/title/tt0848228/',
         metadata: {
             source: 'Action Cinema',
             publishedAt: '2024-03-10',
@@ -109,7 +110,8 @@ export const mockSocialData: ContentItem[] = [
         type: 'social',
         title: 'Amazing sunset today! 🌅',
         description: 'The colors in the sky were absolutely breathtaking. Nature never fails to amaze me. #sunset #nature #photography',
-        image: 'https://picsum.photos/400/300?random=50',
+        image: getUnsplashImage('social', 0),
+        url: 'https://www.instagram.com/p/explore/',
         metadata: {
             source: 'SocialFeed',
             author: '@naturelover',
@@ -121,6 +123,8 @@ export const mockSocialData: ContentItem[] = [
         type: 'social',
         title: 'Just finished reading an incredible book!',
         description: 'Mind-blown by this sci-fi novel. The author created such a vivid world that I felt like I was actually there. #reading #books #scifi',
+        image: getUnsplashImage('social', 1),
+        url: 'https://www.goodreads.com/book/show/968.The_Left_Hand_of_Darkness',
         metadata: {
             source: 'BookClub',
             author: '@bookworm',
@@ -132,7 +136,8 @@ export const mockSocialData: ContentItem[] = [
         type: 'social',
         title: 'Coffee and code - perfect Monday morning ☕',
         description: 'Starting the week with my favorite blend and some exciting new projects. Nothing beats that first cup! #coffee #programming #monday',
-        image: 'https://picsum.photos/400/300?random=50',
+        image: getUnsplashImage('social', 2),
+        url: 'https://dev.to/',
         metadata: {
             source: 'DevCommunity',
             author: '@coder_life',

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useSelector } from 'react-redux'
 import {
     Home,
     Search,
@@ -13,25 +14,90 @@ import {
     Menu,
     X
 } from 'lucide-react'
+import { RootState } from '@/store'
+import { getTranslation } from '@/lib/translations'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface SimpleSidebarProps {
     currentView: string
     onViewChange: (view: string) => void
 }
 
-const navigation = [
-    { id: 'dashboard', name: 'Dashboard', icon: Home },
-    { id: 'trending', name: 'Trending', icon: TrendingUp },
-    { id: 'news', name: 'News', icon: Newspaper },
-    { id: 'movies', name: 'Movies', icon: Film },
-    { id: 'social', name: 'Social', icon: Users },
-    { id: 'favorites', name: 'Favorites', icon: Heart },
-    { id: 'search', name: 'Search', icon: Search },
-    { id: 'settings', name: 'Settings', icon: Settings },
-]
-
 export function SimpleSidebar({ currentView, onViewChange }: SimpleSidebarProps) {
     const [isMobileOpen, setIsMobileOpen] = useState(false)
+    const [favoritesCount, setFavoritesCount] = useState(0)
+    const { currentLanguage, version } = useLanguage()
+
+    // Use useMemo to make navigation reactive to language changes
+    const navigation = useMemo(() => [
+        { id: 'dashboard', name: getTranslation('dashboard', currentLanguage), icon: Home },
+        { id: 'trending', name: getTranslation('trending', currentLanguage), icon: TrendingUp },
+        { id: 'news', name: getTranslation('news', currentLanguage), icon: Newspaper },
+        { id: 'movies', name: getTranslation('movies', currentLanguage), icon: Film },
+        { id: 'social', name: getTranslation('social', currentLanguage), icon: Users },
+        { id: 'favorites', name: getTranslation('favorites', currentLanguage), icon: Heart },
+        { id: 'search', name: getTranslation('search', currentLanguage), icon: Search },
+        { id: 'settings', name: getTranslation('settings', currentLanguage), icon: Settings },
+    ], [currentLanguage, version]) // Include version as dependency
+
+    // Debug function to clear localStorage
+    const clearFavoritesDebug = () => {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('dashboard-favorites')
+            // Also clear any related storage
+            const allKeys = Object.keys(localStorage)
+            allKeys.forEach(key => {
+                if (key.includes('favorite')) {
+                    localStorage.removeItem(key)
+                    console.log('Removed key:', key)
+                }
+            })
+            setFavoritesCount(0)
+            // Dispatch event to update other components
+            window.dispatchEvent(new CustomEvent('favoritesUpdated', {
+                detail: { favorites: [], action: 'clear' }
+            }))
+            console.log('All favorites cleared!')
+        }
+    }
+
+    useEffect(() => {
+        // Load initial favorites count
+        const updateFavoritesCount = () => {
+            if (typeof window !== 'undefined') {
+                try {
+                    const favoritesData = localStorage.getItem('dashboard-favorites')
+                    if (!favoritesData || favoritesData === 'null' || favoritesData === 'undefined') {
+                        setFavoritesCount(0)
+                        return
+                    }
+                    const favorites = JSON.parse(favoritesData)
+                    if (Array.isArray(favorites)) {
+                        setFavoritesCount(favorites.length)
+                    } else {
+                        // Invalid data format, reset
+                        localStorage.removeItem('dashboard-favorites')
+                        setFavoritesCount(0)
+                    }
+                } catch (error) {
+                    console.error('Error parsing favorites:', error)
+                    // Clear corrupted data
+                    localStorage.removeItem('dashboard-favorites')
+                    setFavoritesCount(0)
+                }
+            }
+        }
+
+        updateFavoritesCount()
+
+        // Listen for favorites updates
+        const handleFavoritesUpdate = () => {
+            updateFavoritesCount()
+        }
+
+        window.addEventListener('favoritesUpdated', handleFavoritesUpdate)
+        return () => window.removeEventListener('favoritesUpdated', handleFavoritesUpdate)
+    }, [])
 
     const SidebarContent = () => (
         <div className="flex flex-col h-full">
@@ -70,12 +136,9 @@ export function SimpleSidebar({ currentView, onViewChange }: SimpleSidebarProps)
                         >
                             <Icon className="w-5 h-5" />
                             <span className="font-medium">{item.name}</span>
-                            {item.id === 'favorites' && (
+                            {item.id === 'favorites' && favoritesCount > 0 && (
                                 <span className="ml-auto bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
-                                    {typeof window !== 'undefined' ?
-                                        JSON.parse(localStorage.getItem('dashboard-favorites') || '[]').length :
-                                        0
-                                    }
+                                    {favoritesCount}
                                 </span>
                             )}
                         </button>
@@ -85,8 +148,28 @@ export function SimpleSidebar({ currentView, onViewChange }: SimpleSidebarProps)
 
             {/* Footer */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     v1.0.0 - Fixed & Working
+                </div>
+                {/* Debug button - remove in production */}
+                <div className="space-y-1">
+                    <button
+                        onClick={clearFavoritesDebug}
+                        className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded block w-full"
+                    >
+                        Clear Favorites (Debug)
+                    </button>
+                    <button
+                        onClick={() => {
+                            const data = localStorage.getItem('dashboard-favorites')
+                            console.log('Current favorites data:', data)
+                            console.log('Current count state:', favoritesCount)
+                            alert(`Favorites data: ${data}\nCount: ${favoritesCount}`)
+                        }}
+                        className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded block w-full"
+                    >
+                        Debug Favorites
+                    </button>
                 </div>
             </div>
         </div>

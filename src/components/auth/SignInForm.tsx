@@ -3,14 +3,15 @@
 import { useState } from 'react'
 import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Mail, Lock, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { getTranslation } from '@/lib/translations'
 
 export function SignInForm() {
-    const { t } = useTranslation()
+    const { currentLanguage } = useLanguage()
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -65,10 +66,10 @@ export function SignInForm() {
             >
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-                        {t('welcome')}
+                        {getTranslation('welcome', currentLanguage)}
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-                        {t('signInDesc')}
+                        {getTranslation('signInDesc', currentLanguage)}
                     </p>
                 </div>
 
@@ -82,7 +83,7 @@ export function SignInForm() {
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="email" className="sr-only">
-                                {t('email')}
+                                {getTranslation('email', currentLanguage)}
                             </label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -93,17 +94,17 @@ export function SignInForm() {
                                     autoComplete="email"
                                     required
                                     className="pl-10"
-                                    placeholder={t('email')}
+                                    placeholder={getTranslation('email', currentLanguage)}
                                     value={formData.email}
                                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                    aria-label={t('email')}
+                                    aria-label={getTranslation('email', currentLanguage)}
                                 />
                             </div>
                         </div>
 
                         <div>
                             <label htmlFor="password" className="sr-only">
-                                {t('password')}
+                                {getTranslation('password', currentLanguage)}
                             </label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -114,10 +115,10 @@ export function SignInForm() {
                                     autoComplete="current-password"
                                     required
                                     className="pl-10"
-                                    placeholder={t('password')}
+                                    placeholder={getTranslation('password', currentLanguage)}
                                     value={formData.password}
                                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                    aria-label={t('password')}
+                                    aria-label={getTranslation('password', currentLanguage)}
                                 />
                             </div>
                         </div>
@@ -128,14 +129,14 @@ export function SignInForm() {
                             type="submit"
                             disabled={isLoading}
                             className="w-full flex justify-center py-2 px-4"
-                            aria-label={t('signIn')}
+                            aria-label={getTranslation('signIn', currentLanguage)}
                         >
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                             ) : (
                                 <>
                                     <LogIn className="w-5 h-5 mr-2" />
-                                    {t('signIn')}
+                                    {getTranslation('signIn', currentLanguage)}
                                 </>
                             )}
                         </Button>
@@ -155,7 +156,7 @@ export function SignInForm() {
                             onClick={handleGoogleSignIn}
                             disabled={isLoading}
                             className="w-full"
-                            aria-label={t('signInWithGoogle')}
+                            aria-label={getTranslation('signInWithGoogle', currentLanguage)}
                         >
                             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                                 <path
@@ -175,7 +176,7 @@ export function SignInForm() {
                                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                 />
                             </svg>
-                            {t('signInWithGoogle')}
+                            {getTranslation('signInWithGoogle', currentLanguage)}
                         </Button>
                     </div>
 

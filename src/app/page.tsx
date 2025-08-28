@@ -6,11 +6,69 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { SimpleSidebar } from '@/components/layout/simple-sidebar'
 import { SimpleHeader } from '@/components/layout/simple-header'
+import { getUnsplashImage } from '@/lib/imageUtils'
 
 // Import the fixed content card and create views
 import { ContentCard } from '@/components/content/content-card'
 import { SortableContentCard } from '@/components/content/sortable-content-card'
-import { RefreshCw, TrendingUp, Clock, Star, Search, Heart, Film, Newspaper, Users, Settings, X, GripVertical } from 'lucide-react'
+import { RefreshCw, TrendingUp, Clock, Star, Search, Heart, Film, Newspaper, Users, Settings, X, GripVertical, Globe } from 'lucide-react'
+
+// Import language functionality
+import { useLanguage } from '@/contexts/LanguageContext'
+import { getTranslation } from '@/lib/translations'
+
+// Language Picker Component
+function LanguagePicker() {
+    const { currentLanguage, setLanguage } = useLanguage()
+    const [isOpen, setIsOpen] = useState(false)
+
+    const languageOptions = [
+        { code: 'en', name: 'English', flag: '🇺🇸' },
+        { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
+        { code: 'es', name: 'Español', flag: '🇪🇸' },
+        { code: 'fr', name: 'Français', flag: '🇫🇷' },
+        { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+        { code: 'zh', name: '中文', flag: '🇨🇳' }
+    ]
+
+    const handleLanguageChange = (newLanguage: string) => {
+        setLanguage(newLanguage)
+        setIsOpen(false)
+    }
+
+    const currentLangInfo = languageOptions.find(lang => lang.code === currentLanguage) || languageOptions[0]
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center space-x-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition-all"
+            >
+                <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <span className="text-lg">{currentLangInfo.flag}</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {currentLangInfo.name}
+                </span>
+            </button>
+
+            {isOpen && (
+                <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50">
+                    {languageOptions.map((lang) => (
+                        <button
+                            key={lang.code}
+                            onClick={() => handleLanguageChange(lang.code)}
+                            className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg ${currentLanguage === lang.code ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'
+                                }`}
+                        >
+                            <span className="text-lg">{lang.flag}</span>
+                            <span className="font-medium">{lang.name}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
 
 // Sample content for different views
 const sampleContent = [
@@ -19,7 +77,7 @@ const sampleContent = [
         type: 'news' as const,
         title: 'AI Revolution: Major Breakthrough Announced',
         description: 'Scientists unveil groundbreaking artificial intelligence technology that promises to transform computing and solve complex global challenges.',
-        image: 'https://picsum.photos/400/300?random=1',
+        image: getUnsplashImage('news', 0),
         url: 'https://www.example.com/ai-breakthrough-2024',
         metadata: {
             source: 'Tech Today',
@@ -32,7 +90,7 @@ const sampleContent = [
         type: 'movie' as const,
         title: 'Galactic Odyssey',
         description: 'An epic space adventure that follows a diverse crew as they explore uncharted galaxies and encounter alien civilizations.',
-        image: 'https://picsum.photos/400/600?random=4',
+        image: getUnsplashImage('movie', 0, 400, 600),
         url: 'https://www.imdb.com/title/tt1234567/',
         metadata: {
             source: 'Cinema Hub',
@@ -46,7 +104,7 @@ const sampleContent = [
         type: 'social' as const,
         title: 'Amazing sunrise this morning! 🌅',
         description: 'Woke up early to witness this breathtaking sunrise. The colors were absolutely magical - nature never fails to inspire!',
-        image: 'https://picsum.photos/400/300?random=5',
+        image: getUnsplashImage('social', 0, 400, 300),
         url: 'https://www.instagram.com/p/sample123/',
         metadata: {
             source: 'Social Feed',
@@ -59,7 +117,7 @@ const sampleContent = [
         type: 'news' as const,
         title: 'Global Climate Initiative Gains Momentum',
         description: 'World leaders unite on ambitious environmental policies, setting unprecedented targets for carbon emission reduction.',
-        image: 'https://picsum.photos/400/300?random=2',
+        image: getUnsplashImage('news', 2, 400, 300),
         url: 'https://www.nature.com/articles/climate-initiative-2024',
         metadata: {
             source: 'World Report',
@@ -72,7 +130,7 @@ const sampleContent = [
         type: 'movie' as const,
         title: 'City Hearts',
         description: 'A heartwarming romantic drama set in bustling New York City, exploring love, dreams, and second chances.',
-        image: 'https://picsum.photos/400/600?random=3',
+        image: getUnsplashImage('movie', 2, 400, 600),
         url: 'https://www.imdb.com/title/tt7890123/',
         metadata: {
             source: 'Movie Central',
@@ -96,6 +154,7 @@ const sampleContent = [
 
 // Views Components
 function DashboardView() {
+    const { currentLanguage } = useLanguage()
     const [content, setContent] = useState(sampleContent)
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [dragDropEnabled, setDragDropEnabled] = useState(true)
@@ -166,14 +225,19 @@ function DashboardView() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-                    <p className="text-gray-600 dark:text-gray-400">Your personalized content feed</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {getTranslation('dashboard', currentLanguage)}
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-400">
+                        {getTranslation('personalizedContentFeed', currentLanguage)}
+                    </p>
                 </div>
                 <div className="flex items-center space-x-3">
+                    <LanguagePicker />
                     {dragDropEnabled && (
                         <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
                             <GripVertical className="w-3 h-3" />
-                            <span>Drag to reorder</span>
+                            <span>{getTranslation('dragToReorder', currentLanguage)}</span>
                         </div>
                     )}
                     <button
@@ -182,7 +246,7 @@ function DashboardView() {
                         className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
                         <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                        <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+                        <span>{isRefreshing ? getTranslation('refreshing', currentLanguage) : getTranslation('refresh', currentLanguage)}</span>
                     </button>
                 </div>
             </div>
@@ -604,9 +668,9 @@ function SearchView() {
 }
 
 function SettingsView() {
+    const { currentLanguage, setLanguage } = useLanguage()
     const [userPreferences, setUserPreferences] = useState({
         categories: ['technology', 'business', 'entertainment'],
-        language: 'en',
         region: 'us',
         itemsPerPage: 12,
         autoRefresh: true,
@@ -638,6 +702,10 @@ function SettingsView() {
     const savePreferences = (newPrefs: typeof userPreferences) => {
         setUserPreferences(newPrefs)
         localStorage.setItem('dashboard-preferences', JSON.stringify(newPrefs))
+    }
+
+    const handleLanguageChange = (newLanguage: string) => {
+        setLanguage(newLanguage)
     }
 
     const availableCategories = [
@@ -685,7 +753,9 @@ function SettingsView() {
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">⚙️ Settings</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    ⚙️ {getTranslation('settings', currentLanguage)}
+                </h1>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                     Personalize your dashboard experience
                 </div>
@@ -694,12 +764,12 @@ function SettingsView() {
             {/* Content Preferences */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    📰 Content Preferences
+                    📰 {getTranslation('contentPreferences', currentLanguage)}
                 </h3>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Favorite Categories
+                            {getTranslation('favoriteCategories', currentLanguage)}
                         </label>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                             {availableCategories.map(category => (
@@ -720,11 +790,13 @@ function SettingsView() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Language
+                                {getTranslation('language', currentLanguage)}
                             </label>
                             <select
-                                value={userPreferences.language}
-                                onChange={(e) => savePreferences({ ...userPreferences, language: e.target.value })}
+                                value={currentLanguage}
+                                onChange={(e) => {
+                                    handleLanguageChange(e.target.value)
+                                }}
                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                             >
                                 {languages.map(lang => (
@@ -754,12 +826,14 @@ function SettingsView() {
             {/* Display Settings */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    🎨 Display Settings
+                    🎨 {getTranslation('displaySettings', currentLanguage)}
                 </h3>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Dark Mode</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {getTranslation('darkMode', currentLanguage)}
+                            </label>
                             <p className="text-xs text-gray-500 dark:text-gray-400">Switch between light and dark themes</p>
                         </div>
                         <button
@@ -776,7 +850,7 @@ function SettingsView() {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Items per Page: {userPreferences.itemsPerPage}
+                            {getTranslation('itemsPerPage', currentLanguage)}: {userPreferences.itemsPerPage}
                         </label>
                         <input
                             type="range"
@@ -800,12 +874,14 @@ function SettingsView() {
             {/* Advanced Features */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    🚀 Advanced Features
+                    🚀 {getTranslation('advancedFeatures', currentLanguage)}
                 </h3>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto Refresh</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {getTranslation('autoRefresh', currentLanguage)}
+                            </label>
                             <p className="text-xs text-gray-500 dark:text-gray-400">Automatically refresh content</p>
                         </div>
                         <button
@@ -1020,10 +1096,10 @@ export default function Home() {
             {toast && (
                 <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
                     <div className={`px-4 py-3 rounded-lg shadow-lg border max-w-sm ${toast.type === 'success'
-                            ? 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200'
-                            : toast.type === 'error'
-                                ? 'bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200'
-                                : 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
+                        ? 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700 text-green-800 dark:text-green-200'
+                        : toast.type === 'error'
+                            ? 'bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200'
+                            : 'bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200'
                         }`}>
                         <div className="flex items-center space-x-2">
                             {toast.type === 'success' && <span className="text-green-500">✓</span>}
@@ -1122,7 +1198,7 @@ function EnhancedDashboardView() {
                         type: 'movie' as const,
                         title: randomCategory.titles[randomTitleIndex],
                         description: randomCategory.descriptions[randomTitleIndex],
-                        image: `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`,
+                        image: getUnsplashImage('movie', Math.floor(Math.random() * 100), 400, 600),
                         url: `https://www.imdb.com/title/tt${Math.floor(Math.random() * 9999999)}/`,
                         metadata: {
                             source: 'Live Feed',
@@ -1137,7 +1213,7 @@ function EnhancedDashboardView() {
                         type: 'news' as const,
                         title: randomCategory.titles[randomTitleIndex],
                         description: randomCategory.descriptions[randomTitleIndex],
-                        image: `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`,
+                        image: getUnsplashImage('news', Math.floor(Math.random() * 100), 400, 300),
                         url: `https://www.reuters.com/article/${Math.random().toString(36).substr(2, 12)}`,
                         metadata: {
                             source: 'Live Feed',

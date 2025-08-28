@@ -5,8 +5,6 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage"
 import { api } from '@/lib/api'
 import preferencesReducer from '@/features/preferences/preferencesSlice'
 import favoritesReducer from '@/features/favorites/favoritesSlice'
-import feedReducer from '@/features/feed/feedSlice'
-import searchReducer from '@/features/search/searchSlice'
 import themeReducer from '@/features/theme/themeSlice'
 import languageReducer from '@/features/language/languageSlice'
 
@@ -25,8 +23,21 @@ const createNoopStorage = () => {
     }
 }
 
+// Create safe storage with better SSR handling
+const createSafeStorage = () => {
+    if (typeof window === 'undefined') {
+        return createNoopStorage()
+    }
+    
+    try {
+        return storage
+    } catch {
+        return createNoopStorage()
+    }
+}
+
 // Use localStorage on client-side, noop on server-side
-const clientStorage = typeof window !== 'undefined' ? storage : createNoopStorage()
+const clientStorage = createSafeStorage()
 
 const persistConfig = {
     key: 'root',
@@ -38,8 +49,6 @@ const rootReducer = combineReducers({
     [api.reducerPath]: api.reducer,
     preferences: preferencesReducer,
     favorites: favoritesReducer,
-    feed: feedReducer,
-    search: searchReducer,
     theme: themeReducer,
     language: languageReducer,
 })
